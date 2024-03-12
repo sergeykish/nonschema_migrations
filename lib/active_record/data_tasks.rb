@@ -64,7 +64,7 @@ module ActiveRecord
       def migrate(version = nil)
         # get all data migrations in data/migrations
         # get list of data migrations in database
-        already_done = ActiveRecord::Base.connection.execute("SELECT version FROM data_migrations").map { |record| record['version'].to_i }
+        already_done = ActiveRecord::Base.connection.exec_query("SELECT version FROM data_migrations").map { |record| record['version'].to_i }
 
         data_migrations =  migration_files.map do |file|
           version, name, scope = parse_migration_filename(file)
@@ -82,7 +82,7 @@ module ActiveRecord
           (eval(migration.name).new).migrate(:up)
 
           # push the migration into the database
-          ActiveRecord::Base.connection.execute("INSERT INTO data_migrations (version) VALUES (#{migration.version})")
+          ActiveRecord::Base.connection.exec_query("INSERT INTO data_migrations (version) VALUES (#{migration.version})")
         end
       end
     end
